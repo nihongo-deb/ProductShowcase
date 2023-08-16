@@ -1,5 +1,6 @@
 package org.nihongo_deb.ProductShowcase.Services;
 
+import org.nihongo_deb.ProductShowcase.DTO.ShowcaseDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ShowcaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author KAWAIISHY
@@ -59,5 +61,43 @@ public class ShowcaseService {
     @Transactional
     public void delete(Showcase showcase){
         this.showcaseRepository.delete(showcase);
+    }
+
+    public List<Showcase> findByDTO(ShowcaseDTO showcaseDTO) {
+        List<Showcase> allShowcases = findAll();
+        List<Showcase> filteredShowcases = allShowcases;
+
+        String type = showcaseDTO.getType();
+        String address = showcaseDTO.getAddress();
+        LocalDateTime createdDateFrom = showcaseDTO.getCreatedDateFrom();
+        LocalDateTime createdDateTo = showcaseDTO.getCreatedDateTo();
+        LocalDateTime updatedDateFrom = showcaseDTO.getUpdatedDateFrom();
+        LocalDateTime updatedDateTo = showcaseDTO.getUpdatedDateTo();
+
+        if (type != null)
+            filteredShowcases = allShowcases
+                    .stream()
+                    .filter(sh -> sh.getType().equals(type))
+                    .collect(Collectors.toList());
+
+        if (address != null)
+            filteredShowcases = allShowcases
+                    .stream()
+                    .filter(sh -> sh.getAddress().equals(address))
+                    .collect(Collectors.toList());
+
+        if (createdDateFrom != null && createdDateTo != null)
+            filteredShowcases = allShowcases
+                    .stream()
+                    .filter(sh -> sh.getCreatedAt().isAfter(createdDateFrom) && sh.getCreatedAt().isBefore(createdDateTo))
+                    .collect(Collectors.toList());
+
+        if (updatedDateFrom != null && updatedDateTo != null)
+            filteredShowcases = allShowcases
+                    .stream()
+                    .filter(sh -> sh.getUpdatedAt().isAfter(updatedDateFrom) && sh.getUpdatedAt().isBefore(updatedDateTo))
+                    .collect(Collectors.toList());
+
+        return filteredShowcases;
     }
 }
