@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/create-showcase-table.yaml
+  - include:
+      file: db/changelog/changeset/create-product-table.yaml

@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-product
+      author: Lyubanko Daniil
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: product_id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: showcase_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: showcase_product_fk
+                    referencedTableName: showcase
+                    referencedColumnNames: showcase_id
+              - column:
+                  name: product_position
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_name
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+              - column:
+                  #                  TODO: add Type ENUM
+                  name: product_type
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_price
+                  type: numeric(9, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+

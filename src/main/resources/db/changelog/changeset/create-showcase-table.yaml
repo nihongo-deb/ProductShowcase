@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-showcase
+      author: Lyubanko Daniil
+      changes:
+        - createTable:
+            tableName: showcase
+            columns:
+              - column:
+                  name: showcase_id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: showcase_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: showcase_address
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+              - column:
+#                  TODO: add Type ENUM
+                  name: showcase_type
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: showcase_created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: showcase_updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
