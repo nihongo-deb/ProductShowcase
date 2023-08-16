@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changeset/create-showcase-table.yaml
   - include:
       file: db/changelog/changeset/create-product-table.yaml
+  - include:
+      file: db/changelog/changeset/change-cascade-type-product-table.yaml

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-cascade-type-product-table
+      author: Lyubanko Daniil
+      changes:
+        - dropColumn:
+            tableName: product
+            columnName: showcase_id
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: showcase_id
+                  type: uuid
+        - addForeignKeyConstraint:
+            baseTableName: product
+            baseColumnNames: showcase_id
+            constraintName: showcase_product_fk
+            referencedTableName: showcase
+            referencedColumnNames: showcase_id
+            onDelete: "SET NULL"
