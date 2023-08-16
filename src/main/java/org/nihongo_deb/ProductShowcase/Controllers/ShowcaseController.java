@@ -2,15 +2,15 @@ package org.nihongo_deb.ProductShowcase.Controllers;
 
 import org.nihongo_deb.ProductShowcase.DTO.ShowcaseDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
+import org.nihongo_deb.ProductShowcase.Mappers.ShowcaseMapper;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 /**
  * @author KAWAIISHY
@@ -21,9 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/showcase")
 public class ShowcaseController {
     private final ShowcaseService showcaseService;
+    private final ShowcaseMapper showcaseMapper;
 
-    public ShowcaseController(ShowcaseService showcaseService) {
+    public ShowcaseController(ShowcaseService showcaseService, ShowcaseMapper showcaseMapper) {
         this.showcaseService = showcaseService;
+        this.showcaseMapper = showcaseMapper;
     }
 
     @GetMapping()
@@ -47,10 +49,43 @@ public class ShowcaseController {
         return this.showcaseService.findByDTO(showcaseDTO);
     }
 
+    @GetMapping("/{uuid}")
+    public Showcase getOneByUuid(@PathVariable("uuid") String uuid){
+        // TODO добавить exception handler если возвращает null
+        return this.showcaseService.findByUUID(UUID.fromString(uuid));
+    }
+
     @PutMapping()
     public List<Showcase> filterShowcase(@RequestBody ShowcaseDTO showcaseDTO){
         if (showcaseDTO == null)
             return this.showcaseService.findAll();
+
+        // TODO добавить exception handler если возвращает пустой список
         return this.showcaseService.findByDTO(showcaseDTO);
     }
+
+    @PutMapping("/new")
+    public ResponseEntity<HttpStatus> create(@RequestBody ShowcaseDTO showcaseDTO){
+        LocalDateTime localDate = LocalDateTime.now();
+        showcaseDTO.setCreatedAt(localDate);
+        showcaseDTO.setUpdatedAt(localDate);
+
+        Showcase showcase = this.showcaseMapper.DTOToObject(showcaseDTO);
+        this.showcaseService.save(showcase);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{uuid}")
+    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ShowcaseDTO showcaseDTO){
+        Showcase showcase = this.showcaseMapper.DTOToObject(showcaseDTO);
+
+        //TODO ???
+        showcase.setProducts(this.showcaseService.findByUUID(UUID.fromString(uuid)).getProducts());
+
+        this.showcaseService.update(UUID.fromString(uuid), showcase);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+
 }

@@ -14,6 +14,7 @@ import java.util.List;
  * @created 16.08.2023
  */
 public class ShowcaseDTO {
+    private String name;
     private String type;
     private String address;
     private LocalDateTime createdAt;
@@ -25,6 +26,14 @@ public class ShowcaseDTO {
 
     public ShowcaseDTO() {
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getType() {
@@ -89,5 +98,20 @@ public class ShowcaseDTO {
 
     public void setUpdatedDateTo(LocalDateTime updatedDateTo) {
         this.updatedDateTo = updatedDateTo;
+    }
+
+    @Override
+    public String toString() {
+        return "ShowcaseDTO{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", address='" + address + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", createdDateFrom=" + createdDateFrom +
+                ", createdDateTo=" + createdDateTo +
+                ", updatedDateFrom=" + updatedDateFrom +
+                ", updatedDateTo=" + updatedDateTo +
+                '}';
     }
 }

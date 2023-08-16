@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,10 @@ public class ShowcaseService {
 
     public List<Showcase> findAll() {
         return this.showcaseRepository.findAll();
+    }
+
+    public Showcase findByUUID(UUID uuid){
+        return this.showcaseRepository.findById(uuid).orElse(null);
     }
 
     public List<Showcase> findByType(String type) {
@@ -55,6 +60,9 @@ public class ShowcaseService {
     @Transactional
     public void update(UUID uuid, Showcase updatedShowcase){
         updatedShowcase.setUuid(uuid);
+        updatedShowcase.setCreatedAt(this.showcaseRepository.findById(uuid).get().getCreatedAt());
+        updatedShowcase.setUpdatedAt(LocalDateTime.now());
+
         this.showcaseRepository.save(updatedShowcase);
     }
 
