@@ -1,5 +1,7 @@
 package org.nihongo_deb.ProductShowcase.Services;
 
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ProductRepository;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author KAWAIISHY
@@ -55,5 +58,25 @@ public class ProductService {
     @Transactional
     public void delete(Product product){
         this.productRepository.delete(product);
+    }
+
+    public List<Product> findByFilterDTO(Showcase showcase, ProductFilterDTO filterDTO) {
+        String type = filterDTO.getType();
+        Double priceFrom = filterDTO.getPriceFrom();
+        Double priceTo = filterDTO.getPriceTo();
+
+        List<Product> products = findByShowcase(showcase);
+
+        if (type != null)
+            products = products
+                    .stream()
+                    .filter(p -> p.getType().equals(type))
+                    .collect(Collectors.toList());
+        if (priceFrom != null && priceTo != null)
+            products = products
+                    .stream()
+                    .filter(p -> p.getPrice() >= priceFrom && p.getPrice() <= priceTo)
+                    .collect(Collectors.toList());
+        return products;
     }
 }

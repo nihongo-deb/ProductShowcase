@@ -2,14 +2,13 @@ package org.nihongo_deb.ProductShowcase.Controllers;
 
 import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
+import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ProductService;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +38,18 @@ public class ProductController {
         Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(showcaseUUID));
 
         List<ProductDTO> productDTOS = this.productService.findByShowcase(showcase)
+                .stream()
+                .map((element) -> modelMapper.map(element, ProductDTO.class))
+                .collect(Collectors.toList());
+
+        return productDTOS;
+    }
+
+    @PutMapping("/{showcaseUUID}")
+    public List<ProductDTO> getProductsByFilterDTO(@PathVariable String showcaseUUID, @RequestBody ProductFilterDTO filterDTO){
+        Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(showcaseUUID));
+
+        List<ProductDTO> productDTOS = this.productService.findByFilterDTO(showcase, filterDTO)
                 .stream()
                 .map((element) -> modelMapper.map(element, ProductDTO.class))
                 .collect(Collectors.toList());
