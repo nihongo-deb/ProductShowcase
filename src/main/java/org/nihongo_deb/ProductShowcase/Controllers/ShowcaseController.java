@@ -1,9 +1,12 @@
 package org.nihongo_deb.ProductShowcase.Controllers;
 
-import org.nihongo_deb.ProductShowcase.DTO.ShowcaseDTO;
+import org.modelmapper.ModelMapper;
+import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseFilterDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseNewDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
-import org.nihongo_deb.ProductShowcase.Mappers.ShowcaseMapper;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author KAWAIISHY
@@ -21,15 +25,18 @@ import java.util.UUID;
 @RequestMapping("/api/v1/showcase")
 public class ShowcaseController {
     private final ShowcaseService showcaseService;
-    private final ShowcaseMapper showcaseMapper;
+    private final ModelMapper modelMapper;
 
-    public ShowcaseController(ShowcaseService showcaseService, ShowcaseMapper showcaseMapper) {
+    @Autowired
+    public ShowcaseController(ShowcaseService showcaseService,
+                              ModelMapper modelMapper) {
         this.showcaseService = showcaseService;
-        this.showcaseMapper = showcaseMapper;
+        this.modelMapper = modelMapper;
     }
 
+    // поиск витрины через параметры запроса
     @GetMapping()
-    public List<Showcase> getShowcases(
+    public List<ShowcaseDTO> getShowcases(
             @RequestParam(name = "type", required = false) String type,
             @RequestParam(name = "address", required = false) String address,
             @RequestParam(name = "createdDateFrom", required = false) LocalDateTime createdDateFrom,
@@ -37,48 +44,63 @@ public class ShowcaseController {
             @RequestParam(name = "updatedDateFrom", required = false) LocalDateTime updatedDateFrom,
             @RequestParam(name = "updatedDateTo", required = false) LocalDateTime updatedDateTo){
 
-        ShowcaseDTO showcaseDTO = new ShowcaseDTO();
+        ShowcaseFilterDTO showcaseFilterDTO = new ShowcaseFilterDTO();
 
-        showcaseDTO.setType(type);
-        showcaseDTO.setAddress(address);
-        showcaseDTO.setCreatedDateFrom(createdDateFrom);
-        showcaseDTO.setCreatedDateTo(createdDateTo);
-        showcaseDTO.setCreatedDateFrom(updatedDateFrom);
-        showcaseDTO.setCreatedDateTo(updatedDateTo);
+        showcaseFilterDTO.setType(type);
+        showcaseFilterDTO.setAddress(address);
+        showcaseFilterDTO.setCreatedDateFrom(createdDateFrom);
+        showcaseFilterDTO.setCreatedDateTo(createdDateTo);
+        showcaseFilterDTO.setCreatedDateFrom(updatedDateFrom);
+        showcaseFilterDTO.setCreatedDateTo(updatedDateTo);
 
-        return this.showcaseService.findByDTO(showcaseDTO);
+        List<ShowcaseDTO> showcaseDTOS = this.showcaseService.findByFilterDTO(showcaseFilterDTO)
+                .stream()
+                .map((element) -> modelMapper.map(element, ShowcaseDTO.class))
+                .collect(Collectors.toList());
+
+        return showcaseDTOS;
+    }
+
+    // поиск витрины через поля JSON-а (ShowcaseFilterDTO)
+    @PutMapping()
+    public List<ShowcaseDTO> filterShowcase(@RequestBody ShowcaseFilterDTO showcaseFilterDTO){
+        List<ShowcaseDTO> showcaseDTOS;
+        if (showcaseFilterDTO == null)
+            showcaseDTOS = this.showcaseService.findAll()
+                    .stream()
+                    .map((element) -> modelMapper.map(element, ShowcaseDTO.class))
+                    .collect(Collectors.toList());
+
+        // TODO добавить exception handler если возвращает пустой список
+        else
+            showcaseDTOS = this.showcaseService.findByFilterDTO(showcaseFilterDTO)
+                    .stream()
+                    .map((element) -> modelMapper.map(element, ShowcaseDTO.class))
+                    .collect(Collectors.toList());
+
+        return showcaseDTOS;
     }
 
     @GetMapping("/{uuid}")
-    public Showcase getOneByUuid(@PathVariable("uuid") String uuid){
+    public ShowcaseDTO getOneByUuid(@PathVariable("uuid") String uuid){
         // TODO добавить exception handler если возвращает null
-        return this.showcaseService.findByUUID(UUID.fromString(uuid));
-    }
-
-    @PutMapping()
-    public List<Showcase> filterShowcase(@RequestBody ShowcaseDTO showcaseDTO){
-        if (showcaseDTO == null)
-            return this.showcaseService.findAll();
-
-        // TODO добавить exception handler если возвращает пустой список
-        return this.showcaseService.findByDTO(showcaseDTO);
+        return modelMapper.map(this.showcaseService.findByUUID(UUID.fromString(uuid)), ShowcaseDTO.class);
     }
 
     @PutMapping("/new")
-    public ResponseEntity<HttpStatus> create(@RequestBody ShowcaseDTO showcaseDTO){
-        LocalDateTime localDate = LocalDateTime.now();
-        showcaseDTO.setCreatedAt(localDate);
-        showcaseDTO.setUpdatedAt(localDate);
+    public ResponseEntity<HttpStatus> create(@RequestBody ShowcaseNewDTO showcaseNewDTO){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Showcase showcase = modelMapper.map(showcaseNewDTO, Showcase.class);
+        showcase.setCreatedAt(localDateTime);
+        showcase.setUpdatedAt(localDateTime);
 
-        Showcase showcase = this.showcaseMapper.DTOToObject(showcaseDTO);
         this.showcaseService.save(showcase);
-
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ShowcaseDTO showcaseDTO){
-        Showcase showcase = this.showcaseMapper.DTOToObject(showcaseDTO);
+        Showcase showcase = this.modelMapper.map(showcaseDTO, Showcase.class);
 
         //TODO ???
         showcase.setProducts(this.showcaseService.findByUUID(UUID.fromString(uuid)).getProducts());
@@ -87,5 +109,11 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable String uuid){
+        this.showcaseService.delete(UUID.fromString(uuid));
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
 
 }

@@ -1,12 +1,10 @@
-package org.nihongo_deb.ProductShowcase.DTO;
+package org.nihongo_deb.ProductShowcase.DTO.Showcase;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
-import org.nihongo_deb.ProductShowcase.Entities.Product;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductSimpleDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author KAWAIISHY
@@ -14,18 +12,26 @@ import java.util.List;
  * @created 16.08.2023
  */
 public class ShowcaseDTO {
+    private UUID uuid;
     private String name;
     private String type;
     private String address;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime createdDateFrom;
-    private LocalDateTime createdDateTo;
-    private LocalDateTime updatedDateFrom;
-    private LocalDateTime updatedDateTo;
+
+    private List<ProductSimpleDTO> products;
+
 
     public ShowcaseDTO() {
 
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -68,36 +74,12 @@ public class ShowcaseDTO {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getCreatedDateFrom() {
-        return createdDateFrom;
+    public List<ProductSimpleDTO> getProducts() {
+        return products;
     }
 
-    public void setCreatedDateFrom(LocalDateTime createdDateFrom) {
-        this.createdDateFrom = createdDateFrom;
-    }
-
-    public LocalDateTime getCreatedDateTo() {
-        return createdDateTo;
-    }
-
-    public void setCreatedDateTo(LocalDateTime createdDateTo) {
-        this.createdDateTo = createdDateTo;
-    }
-
-    public LocalDateTime getUpdatedDateFrom() {
-        return updatedDateFrom;
-    }
-
-    public void setUpdatedDateFrom(LocalDateTime updatedDateFrom) {
-        this.updatedDateFrom = updatedDateFrom;
-    }
-
-    public LocalDateTime getUpdatedDateTo() {
-        return updatedDateTo;
-    }
-
-    public void setUpdatedDateTo(LocalDateTime updatedDateTo) {
-        this.updatedDateTo = updatedDateTo;
+    public void setProducts(List<ProductSimpleDTO> products) {
+        this.products = products;
     }
 
     @Override
@@ -108,10 +90,6 @@ public class ShowcaseDTO {
                 ", address='" + address + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", createdDateFrom=" + createdDateFrom +
-                ", createdDateTo=" + createdDateTo +
-                ", updatedDateFrom=" + updatedDateFrom +
-                ", updatedDateTo=" + updatedDateTo +
                 '}';
     }
 }
