@@ -3,13 +3,17 @@ package org.nihongo_deb.ProductShowcase.Controllers;
 import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductNewDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ProductService;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,5 +59,16 @@ public class ProductController {
                 .collect(Collectors.toList());
 
         return productDTOS;
+    }
+
+    @PutMapping("/new")
+    private ResponseEntity<HttpStatus> create(@RequestBody ProductNewDTO productNewDTO){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Product product = this.modelMapper.map(productNewDTO, Product.class);
+        product.setCreatedAt(localDateTime);
+        product.setUpdatedAt(localDateTime);
+        this.productService.save(product);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }
