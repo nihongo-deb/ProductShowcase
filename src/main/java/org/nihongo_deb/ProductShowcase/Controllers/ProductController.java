@@ -79,4 +79,10 @@ public class ProductController {
         this.productService.update(UUID.fromString(uuid), product);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable String uuid){
+        this.productService.delete(UUID.fromString(uuid));
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
 }

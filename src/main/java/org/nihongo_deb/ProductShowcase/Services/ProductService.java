@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,12 +53,14 @@ public class ProductService {
     @Transactional
     public void update(UUID uuid, Product updatedProduct){
         updatedProduct.setUuid(uuid);
+        updatedProduct.setCreatedAt(this.productRepository.findById(uuid).get().getCreatedAt()); // TODO изменить логику назначения времени создания
+        updatedProduct.setUpdatedAt(LocalDateTime.now());
         this.productRepository.save(updatedProduct);
     }
 
     @Transactional
-    public void delete(Product product){
-        this.productRepository.delete(product);
+    public void delete(UUID uuid){
+        this.productRepository.deleteById(uuid);
     }
 
     public List<Product> findByFilterDTO(Showcase showcase, ProductFilterDTO filterDTO) {

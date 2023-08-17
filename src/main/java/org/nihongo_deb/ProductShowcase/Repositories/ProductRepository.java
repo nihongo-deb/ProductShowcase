@@ -18,4 +18,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByOwner(Showcase showcase);
     List<Product> findByType(String type);
     List<Product> findByPriceBetween(Double p1, Double p2);
+
 }
