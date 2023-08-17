@@ -62,18 +62,15 @@ public class ProductController {
         return productDTOS;
     }
 
-    @PutMapping("/new")
+    @PostMapping("/new")
     private ResponseEntity<HttpStatus> create(@RequestBody ProductNewDTO productNewDTO){
-        LocalDateTime localDateTime = LocalDateTime.now();
         Product product = this.modelMapper.map(productNewDTO, Product.class);
-        product.setCreatedAt(localDateTime);
-        product.setUpdatedAt(localDateTime);
         this.productService.save(product);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PatchMapping("/{uuid}")
+    @PutMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ProductDTO productDTO){
         Product product = this.modelMapper.map(productDTO, Product.class);
         this.productService.update(UUID.fromString(uuid), product);

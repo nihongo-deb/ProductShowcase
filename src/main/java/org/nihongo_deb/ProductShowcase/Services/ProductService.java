@@ -47,6 +47,9 @@ public class ProductService {
 
     @Transactional
     public void save(Product product){
+        product.setCreatedAt(LocalDateTime.now());
+        product.setUpdatedAt(LocalDateTime.now());
+
         this.productRepository.save(product);
     }
 

@@ -87,7 +87,7 @@ public class ShowcaseController {
         return modelMapper.map(this.showcaseService.findByUUID(UUID.fromString(uuid)), ShowcaseDTO.class);
     }
 
-    @PutMapping("/new")
+    @PostMapping("/new")
     public ResponseEntity<HttpStatus> create(@RequestBody ShowcaseNewDTO showcaseNewDTO){
         LocalDateTime localDateTime = LocalDateTime.now();
         Showcase showcase = modelMapper.map(showcaseNewDTO, Showcase.class);
@@ -98,7 +98,7 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PatchMapping("/{uuid}")
+    @PutMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ShowcaseDTO showcaseDTO){
         Showcase showcase = this.modelMapper.map(showcaseDTO, Showcase.class);
 
