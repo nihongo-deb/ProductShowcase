@@ -1,6 +1,7 @@
 package org.nihongo_deb.ProductShowcase.Services;
 
 import org.nihongo_deb.ProductShowcase.Entities.Product;
+import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class ProductService {
     @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
+    }
+
+    public List<Product> findByShowcase(Showcase showcase){
+        return this.productRepository.findByOwner(showcase);
     }
 
     public List<Product> findAll(){
