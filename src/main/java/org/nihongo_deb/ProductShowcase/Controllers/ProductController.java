@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductNewDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ProductService;
@@ -69,6 +70,13 @@ public class ProductController {
         product.setUpdatedAt(localDateTime);
         this.productService.save(product);
 
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{uuid}")
+    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ProductDTO productDTO){
+        Product product = this.modelMapper.map(productDTO, Product.class);
+        this.productService.update(UUID.fromString(uuid), product);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }
