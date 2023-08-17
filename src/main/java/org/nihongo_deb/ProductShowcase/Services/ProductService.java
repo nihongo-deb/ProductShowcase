@@ -1,6 +1,5 @@
 package org.nihongo_deb.ProductShowcase.Services;
 
-import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,10 @@ public class ProductService {
     @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
+    }
+
+    public Optional<Product> findById(UUID uuid) {
+        return this.productRepository.findById(uuid);
     }
 
     public List<Product> findByShowcase(Showcase showcase){
@@ -55,10 +59,9 @@ public class ProductService {
 
     @Transactional
     public void update(UUID uuid, Product updatedProduct){
-        updatedProduct.setUuid(uuid);
-        updatedProduct.setCreatedAt(this.productRepository.findById(uuid).get().getCreatedAt()); // TODO изменить логику назначения времени создания
-        updatedProduct.setUpdatedAt(LocalDateTime.now());
-        this.productRepository.save(updatedProduct);
+        Product product = this.productRepository.findById(uuid).get();
+        product.updateFields(updatedProduct);
+        this.productRepository.save(product);
     }
 
     @Transactional

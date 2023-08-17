@@ -62,7 +62,7 @@ public class ProductController {
         return productDTOS;
     }
 
-    @PostMapping("/new")
+    @PostMapping("")
     private ResponseEntity<HttpStatus> create(@RequestBody ProductNewDTO productNewDTO){
         Product product = this.modelMapper.map(productNewDTO, Product.class);
         this.productService.save(product);
@@ -70,10 +70,10 @@ public class ProductController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping("/{uuid}")
+    @PatchMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ProductDTO productDTO){
-        Product product = this.modelMapper.map(productDTO, Product.class);
-        this.productService.update(UUID.fromString(uuid), product);
+        Product updatedProduct = this.modelMapper.map(productDTO, Product.class);
+        this.productService.update(UUID.fromString(uuid), updatedProduct);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

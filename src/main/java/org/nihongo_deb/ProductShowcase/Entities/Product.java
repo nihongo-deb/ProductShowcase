@@ -103,4 +103,12 @@ public class Product {
     public void setOwner(Showcase owner) {
         this.owner = owner;
     }
+
+    public void updateFields(Product product){
+        this.price = product.getPrice();
+        this.name = product.getName();
+        this.type = product.getType();
+        this.position = product.getPosition();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

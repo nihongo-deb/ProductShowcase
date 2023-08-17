@@ -1,8 +1,6 @@
 package org.nihongo_deb.ProductShowcase.Entities;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
