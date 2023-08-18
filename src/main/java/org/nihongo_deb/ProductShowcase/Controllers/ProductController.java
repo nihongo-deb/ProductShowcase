@@ -1,5 +1,7 @@
 package org.nihongo_deb.ProductShowcase.Controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductDTO;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/products")
+@Tag(name = "Продукты", description = "Позволяет управлять продуктами")
 public class ProductController {
     private final ProductService productService;
     private final ShowcaseService showcaseService;
@@ -47,6 +50,9 @@ public class ProductController {
         this.productFilterValidator = productFilterValidator;
     }
 
+    @Operation(
+            summary = "Получение списка продуктов",
+            description = "Получение списка продуктов по UUID (PathVariable) витрины")
     @GetMapping("/{showcaseUUID}")
     public List<ProductDTO> getAllProductsInShowcase(@PathVariable String showcaseUUID){
         Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(showcaseUUID));
@@ -59,6 +65,9 @@ public class ProductController {
         return productDTOS;
     }
 
+    @Operation(
+            summary = "Получение списка продуктов",
+            description = "Получение списка продуктов по UUID (PathVariable) витрины и их фильтрация по полям тела запроса (см. ProductFilterDTO)")
     @PutMapping("/{showcaseUUID}")
     public List<ProductDTO> getProductsByFilterDTO(@PathVariable String showcaseUUID, @RequestBody @Valid ProductFilterDTO filterDTO, BindingResult bindingResult){
         Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(showcaseUUID));
@@ -78,7 +87,9 @@ public class ProductController {
 
         return productDTOS;
     }
-
+    @Operation(
+            summary = "Создание продукта",
+            description = "Создание происходит по полям, переданные в теле запроса (см. ProductNewDTO)")
     @PostMapping()
     private ResponseEntity<HttpStatus> create(@RequestBody @Valid ProductNewDTO productNewDTO, BindingResult bindingResult){
         newProductValidator.validate(productNewDTO, bindingResult);
@@ -97,6 +108,9 @@ public class ProductController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Обновление продукта",
+            description = "Обновление происходит по UUID (PathVariable) продукта и по полям, переданные в теле запроса (см. ProductNewDTO)")
     @PatchMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody @Valid ProductNewDTO productNewDTO, BindingResult bindingResult){
         newProductValidator.validate(productNewDTO, bindingResult);
@@ -114,6 +128,9 @@ public class ProductController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Удаление продукта",
+            description = "Удаление происходит по UUID (PathVariable) продукта")
     @DeleteMapping("/{uuid}")
     public ResponseEntity<HttpStatus> delete(@PathVariable String uuid){
         this.productService.delete(UUID.fromString(uuid));

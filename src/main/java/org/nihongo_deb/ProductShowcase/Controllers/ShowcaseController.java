@@ -1,5 +1,8 @@
 package org.nihongo_deb.ProductShowcase.Controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseDTO;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/showcase")
+@Tag(name = "Витрины", description = "Позволяет управлять витринами")
 public class ShowcaseController {
     private final ShowcaseService showcaseService;
     private final ModelMapper modelMapper;
@@ -49,14 +53,17 @@ public class ShowcaseController {
     }
 
     // поиск витрины через параметры запроса
+    @Operation(
+            summary = "Получение списка витрин",
+            description = "Фильтрация осуществляется по параметрам запроса")
     @GetMapping()
     public List<ShowcaseDTO> getShowcases(
-            @RequestParam(name = "type", required = false) String type,
-            @RequestParam(name = "address", required = false) String address,
-            @RequestParam(name = "createdDateFrom", required = false) LocalDateTime createdDateFrom,
-            @RequestParam(name = "createdDateTo", required = false) LocalDateTime createdDateTo,
-            @RequestParam(name = "updatedDateFrom", required = false) LocalDateTime updatedDateFrom,
-            @RequestParam(name = "updatedDateTo", required = false) LocalDateTime updatedDateTo){
+            @RequestParam(name = "type", required = false) @Parameter(description = "Тип витрины") String type,
+            @RequestParam(name = "address", required = false) @Parameter(description = "Адрес витрины") String address,
+            @RequestParam(name = "createdDateFrom", required = false) @Parameter(description = "Начало промежутка создания витрины") LocalDateTime createdDateFrom,
+            @RequestParam(name = "createdDateTo", required = false) @Parameter(description = "Конец промежутка создания витрины") LocalDateTime createdDateTo,
+            @RequestParam(name = "updatedDateFrom", required = false) @Parameter(description = "Начало промежутка обновления витрины") LocalDateTime updatedDateFrom,
+            @RequestParam(name = "updatedDateTo", required = false) @Parameter(description = "Конец промежутка обновления витрины") LocalDateTime updatedDateTo){
 
         ShowcaseFilterDTO showcaseFilterDTO = new ShowcaseFilterDTO();
 
@@ -76,6 +83,9 @@ public class ShowcaseController {
     }
 
     // поиск витрины через поля JSON-а (ShowcaseFilterDTO)
+    @Operation(
+            summary = "Получение списка витрин",
+            description = "Фильтрация осуществляется по полям тела запроса (см. ShowcaseFilterDTO)")
     @PutMapping()
     public List<ShowcaseDTO> filterShowcase(@RequestBody @Valid ShowcaseFilterDTO showcaseFilterDTO, BindingResult bindingResult){
         List<ShowcaseDTO> showcaseDTOS;
@@ -102,12 +112,18 @@ public class ShowcaseController {
         return showcaseDTOS;
     }
 
+    @Operation(
+            summary = "Получение витрины",
+            description = "Получение витрины по UUID")
     @GetMapping("/{uuid}")
     public ShowcaseDTO getOneByUuid(@PathVariable("uuid") String uuid){
         Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(uuid));
         return modelMapper.map(showcase, ShowcaseDTO.class);
     }
 
+    @Operation(
+            summary = "Создание витрины",
+            description = "Создание витрины по средствам тела запроса (см. ShowcaseNewDTO)")
     @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid ShowcaseNewDTO showcaseNewDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
@@ -124,6 +140,9 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Обновление витрины",
+            description = "Обновление витрины по средствам тела запроса (см. ShowcaseUpdateDTO)")
     @PatchMapping("/{uuid}")
     public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody @Valid ShowcaseUpdateDTO showcaseUpdateDTO, BindingResult bindingResult){
         updateShowcaseValidator.validate(showcaseUpdateDTO, bindingResult);
@@ -140,6 +159,10 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Удаление витрины",
+            description = "Удаление витрины по UUID (каскадирование - ON DELETE SET NULL)." +
+                    "Данный метод каскадирования был выбран, если продукты мы захотим в дальнейшем 'перенести' на другие витрины")
     @DeleteMapping("/{uuid}")
     public ResponseEntity<HttpStatus> delete(@PathVariable String uuid){
         this.showcaseService.delete(UUID.fromString(uuid));
