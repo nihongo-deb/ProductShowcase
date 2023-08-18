@@ -1,7 +1,6 @@
 package org.nihongo_deb.ProductShowcase.DTO.Showcase;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * @author KAWAIISHY

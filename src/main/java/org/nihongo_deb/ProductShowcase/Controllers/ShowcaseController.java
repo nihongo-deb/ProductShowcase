@@ -9,9 +9,11 @@ import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseUpdateDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseFilterException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotCreatedException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotUpdatedException;
+import org.nihongo_deb.ProductShowcase.Validators.ShowcaseFilterValidator;
 import org.nihongo_deb.ProductShowcase.Validators.UpdateShowcaseValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,11 +38,14 @@ public class ShowcaseController {
     private final ModelMapper modelMapper;
 
     private final UpdateShowcaseValidator updateShowcaseValidator;
+    private final ShowcaseFilterValidator showcaseFilterValidator;
+
     @Autowired
-    public ShowcaseController(ShowcaseService showcaseService, ModelMapper modelMapper, UpdateShowcaseValidator updateShowcaseValidator) {
+    public ShowcaseController(ShowcaseService showcaseService, ModelMapper modelMapper, UpdateShowcaseValidator updateShowcaseValidator, ShowcaseFilterValidator showcaseFilterValidator) {
         this.showcaseService = showcaseService;
         this.modelMapper = modelMapper;
         this.updateShowcaseValidator = updateShowcaseValidator;
+        this.showcaseFilterValidator = showcaseFilterValidator;
     }
 
     // поиск витрины через параметры запроса
@@ -72,21 +77,28 @@ public class ShowcaseController {
 
     // поиск витрины через поля JSON-а (ShowcaseFilterDTO)
     @PutMapping()
-    public List<ShowcaseDTO> filterShowcase(@RequestBody ShowcaseFilterDTO showcaseFilterDTO){
+    public List<ShowcaseDTO> filterShowcase(@RequestBody @Valid ShowcaseFilterDTO showcaseFilterDTO, BindingResult bindingResult){
         List<ShowcaseDTO> showcaseDTOS;
         if (showcaseFilterDTO == null)
             showcaseDTOS = this.showcaseService.findAll()
                     .stream()
                     .map((element) -> modelMapper.map(element, ShowcaseDTO.class))
                     .collect(Collectors.toList());
+        else {
+            showcaseFilterValidator.validate(showcaseFilterDTO, bindingResult);
 
-        // TODO добавить exception handler если возвращает пустой список
-        else
+            if (bindingResult.hasErrors()){
+                StringBuilder stringBuilder = new StringBuilder();
+                bindingResult.getFieldErrors().forEach(e -> stringBuilder.append(e.getField()).append(" - ").append(e.getDefaultMessage()));
+
+                throw new ShowcaseFilterException(stringBuilder.toString());
+            }
+
             showcaseDTOS = this.showcaseService.findByFilterDTO(showcaseFilterDTO)
                     .stream()
                     .map((element) -> modelMapper.map(element, ShowcaseDTO.class))
                     .collect(Collectors.toList());
-
+        }
         return showcaseDTOS;
     }
 
@@ -151,6 +163,13 @@ public class ShowcaseController {
 
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotUpdatedException e){
+        MyErrorResponse response = new MyErrorResponse(e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ShowcaseFilterException e){
         MyErrorResponse response = new MyErrorResponse(e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
