@@ -10,11 +10,9 @@ import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ProductService;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
-import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotCreatedException;
-import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
-import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotUpdatedException;
-import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.*;
 import org.nihongo_deb.ProductShowcase.Validators.NewProductValidator;
+import org.nihongo_deb.ProductShowcase.Validators.ProductFilterValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,14 +34,17 @@ public class ProductController {
     private final ProductService productService;
     private final ShowcaseService showcaseService;
     private final ModelMapper modelMapper;
+
     private final NewProductValidator newProductValidator;
+    private final ProductFilterValidator productFilterValidator;
 
     @Autowired
-    public ProductController(ProductService productService, ShowcaseService showcaseService, ModelMapper modelMapper, NewProductValidator newProductValidator) {
+    public ProductController(ProductService productService, ShowcaseService showcaseService, ModelMapper modelMapper, NewProductValidator newProductValidator, ProductFilterValidator productFilterValidator) {
         this.productService = productService;
         this.showcaseService = showcaseService;
         this.modelMapper = modelMapper;
         this.newProductValidator = newProductValidator;
+        this.productFilterValidator = productFilterValidator;
     }
 
     @GetMapping("/{showcaseUUID}")
@@ -59,8 +60,16 @@ public class ProductController {
     }
 
     @PutMapping("/{showcaseUUID}")
-    public List<ProductDTO> getProductsByFilterDTO(@PathVariable String showcaseUUID, @RequestBody ProductFilterDTO filterDTO){
+    public List<ProductDTO> getProductsByFilterDTO(@PathVariable String showcaseUUID, @RequestBody @Valid ProductFilterDTO filterDTO, BindingResult bindingResult){
         Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(showcaseUUID));
+        productFilterValidator.validate(filterDTO, bindingResult);
+
+        if (bindingResult.hasErrors()){
+            StringBuilder stringBuilder = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(e -> stringBuilder.append(e.getField()).append(" - ").append(e.getDefaultMessage()));
+
+            throw new ProductFilterException(stringBuilder.toString());
+        }
 
         List<ProductDTO> productDTOS = this.productService.findByFilterDTO(showcase, filterDTO)
                 .stream()
@@ -135,6 +144,13 @@ public class ProductController {
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotFoundException e){
         MyErrorResponse response = new MyErrorResponse("showcase not found, check uuid");
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ProductFilterException e){
+        MyErrorResponse response = new MyErrorResponse(e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
