@@ -1,14 +1,19 @@
 package org.nihongo_deb.ProductShowcase.Controllers;
 
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseFilterDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseNewDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
+import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotCreatedException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -87,13 +92,18 @@ public class ShowcaseController {
         return modelMapper.map(this.showcaseService.findByUUID(UUID.fromString(uuid)), ShowcaseDTO.class);
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<HttpStatus> create(@RequestBody ShowcaseNewDTO showcaseNewDTO){
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Showcase showcase = modelMapper.map(showcaseNewDTO, Showcase.class);
-        showcase.setCreatedAt(localDateTime);
-        showcase.setUpdatedAt(localDateTime);
+    @PostMapping("")
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid ShowcaseNewDTO showcaseNewDTO, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            StringBuilder stringBuilder = new StringBuilder();
 
+            bindingResult.getFieldErrors()
+                    .forEach(e -> stringBuilder.append(e.getField()).append(" - ").append(e.getDefaultMessage()).append("; "));
+
+            throw new ShowcaseNotCreatedException(stringBuilder.toString());
+        }
+
+        Showcase showcase = modelMapper.map(showcaseNewDTO, Showcase.class);
         this.showcaseService.save(showcase);
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -116,4 +126,10 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotCreatedException e){
+        MyErrorResponse response = new MyErrorResponse(e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

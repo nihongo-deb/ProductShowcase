@@ -91,6 +91,8 @@ public class ShowcaseService {
 
     @Transactional
     public void save(Showcase showcase){
+        showcase.setCreatedAt(LocalDateTime.now());
+        showcase.setUpdatedAt(LocalDateTime.now());
         this.showcaseRepository.save(showcase);
     }
 
