@@ -30,10 +30,10 @@ public class NewProductValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         ProductNewDTO productNewDTO = (ProductNewDTO) target;
-
+        if (productNewDTO.getOwner() == null)
+            return;
         if (showcaseService.findByUUID(productNewDTO.getOwner()) == null){
-            System.out.println(true);
             errors.rejectValue("owner", "", "no showcases with this uuid exist");
-        } else System.out.println(false);
+        }
     }
 }

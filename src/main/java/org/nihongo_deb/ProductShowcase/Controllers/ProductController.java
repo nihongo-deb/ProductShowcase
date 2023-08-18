@@ -70,7 +70,7 @@ public class ProductController {
         return productDTOS;
     }
 
-    @PostMapping("")
+    @PostMapping()
     private ResponseEntity<HttpStatus> create(@RequestBody @Valid ProductNewDTO productNewDTO, BindingResult bindingResult){
         newProductValidator.validate(productNewDTO, bindingResult);
 

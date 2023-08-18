@@ -13,7 +13,6 @@ import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,8 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Optional<Product> findById(UUID uuid) {
-        return this.productRepository.findById(uuid);
+    public Product findById(UUID uuid) {
+        return this.productRepository.findById(uuid).orElseThrow(ProductNotFoundException::new);
     }
 
     public List<Product> findByShowcase(Showcase showcase){
@@ -61,14 +60,14 @@ public class ProductService {
 
     @Transactional
     public void update(UUID uuid, Product updatedProduct){
-        Product product = findById(uuid).orElseThrow(ProductNotFoundException::new);
+        Product product = findById(uuid);
         product.updateFields(updatedProduct);
         this.productRepository.save(product);
     }
 
     @Transactional
     public void delete(UUID uuid){
-        findById(uuid).orElseThrow(ProductNotFoundException::new);
+        findById(uuid);
         this.productRepository.deleteById(uuid);
     }
 

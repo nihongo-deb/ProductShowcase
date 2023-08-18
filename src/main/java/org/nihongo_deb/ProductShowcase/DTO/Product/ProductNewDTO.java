@@ -26,7 +26,6 @@ public class ProductNewDTO {
     @NotNull(message = "price should not be empty")
     private Double price;
 
-    @NotNull(message = "showcase(uuid) should not be empty")
     private UUID owner;
 
     public Integer getPosition() {

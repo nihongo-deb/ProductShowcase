@@ -2,6 +2,7 @@ package org.nihongo_deb.ProductShowcase.Services;
 
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
+import org.nihongo_deb.ProductShowcase.Repositories.ProductRepository;
 import org.nihongo_deb.ProductShowcase.Repositories.ShowcaseRepository;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ShowcaseService {
     private final ShowcaseRepository showcaseRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public ShowcaseService(ShowcaseRepository showcaseRepository) {
+    public ShowcaseService(ShowcaseRepository showcaseRepository, ProductRepository productRepository) {
         this.showcaseRepository = showcaseRepository;
+        this.productRepository = productRepository;
     }
 
     public List<Showcase> findAll() {
@@ -98,11 +101,14 @@ public class ShowcaseService {
 
     @Transactional
     public void update(UUID uuid, Showcase updatedShowcase){
-        updatedShowcase.setUuid(uuid);
-        updatedShowcase.setCreatedAt(this.showcaseRepository.findById(uuid).get().getCreatedAt());
-        updatedShowcase.setUpdatedAt(LocalDateTime.now());
-
-        this.showcaseRepository.save(updatedShowcase);
+        Showcase showcase = findByUUID(uuid);
+        showcase.updateFields(updatedShowcase);
+        updatedShowcase.getProducts().forEach(p -> {
+            p = this.productRepository.findById(p.getUuid()).get();
+            p.setOwner(showcase);
+            this.productRepository.save(p);
+        });
+        this.showcaseRepository.save(showcase);
     }
 
     @Transactional

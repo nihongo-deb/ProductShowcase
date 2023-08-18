@@ -5,11 +5,14 @@ import org.modelmapper.ModelMapper;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseFilterDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseNewDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseUpdateDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotCreatedException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotUpdatedException;
+import org.nihongo_deb.ProductShowcase.Validators.UpdateShowcaseValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,11 +35,12 @@ public class ShowcaseController {
     private final ShowcaseService showcaseService;
     private final ModelMapper modelMapper;
 
+    private final UpdateShowcaseValidator updateShowcaseValidator;
     @Autowired
-    public ShowcaseController(ShowcaseService showcaseService,
-                              ModelMapper modelMapper) {
+    public ShowcaseController(ShowcaseService showcaseService, ModelMapper modelMapper, UpdateShowcaseValidator updateShowcaseValidator) {
         this.showcaseService = showcaseService;
         this.modelMapper = modelMapper;
+        this.updateShowcaseValidator = updateShowcaseValidator;
     }
 
     // поиск витрины через параметры запроса
@@ -92,7 +96,7 @@ public class ShowcaseController {
         return modelMapper.map(showcase, ShowcaseDTO.class);
     }
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid ShowcaseNewDTO showcaseNewDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             StringBuilder stringBuilder = new StringBuilder();
@@ -108,14 +112,19 @@ public class ShowcaseController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping("/{uuid}")
-    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ShowcaseDTO showcaseDTO){
-        Showcase showcase = this.modelMapper.map(showcaseDTO, Showcase.class);
+    @PatchMapping("/{uuid}")
+    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody @Valid ShowcaseUpdateDTO showcaseUpdateDTO, BindingResult bindingResult){
+        updateShowcaseValidator.validate(showcaseUpdateDTO, bindingResult);
 
-        //TODO ???
-        showcase.setProducts(this.showcaseService.findByUUID(UUID.fromString(uuid)).getProducts());
+        if (bindingResult.hasErrors()){
+            StringBuilder stringBuilder = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(e -> stringBuilder.append(e.getField()).append(" - ").append(e.getDefaultMessage()).append("; "));
 
-        this.showcaseService.update(UUID.fromString(uuid), showcase);
+            throw new ShowcaseNotUpdatedException(stringBuilder.toString());
+        }
+
+        Showcase updatedShowcase = this.modelMapper.map(showcaseUpdateDTO, Showcase.class);
+        this.showcaseService.update(UUID.fromString(uuid), updatedShowcase);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -136,6 +145,13 @@ public class ShowcaseController {
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotFoundException e){
         MyErrorResponse response = new MyErrorResponse("showcase not found, check uuid");
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotUpdatedException e){
+        MyErrorResponse response = new MyErrorResponse(e.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
