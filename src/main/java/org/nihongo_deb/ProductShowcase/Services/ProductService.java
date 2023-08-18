@@ -1,12 +1,15 @@
 package org.nihongo_deb.ProductShowcase.Services;
 
+import jakarta.validation.Valid;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ProductRepository;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,13 +56,12 @@ public class ProductService {
     public void save(Product product){
         product.setCreatedAt(LocalDateTime.now());
         product.setUpdatedAt(LocalDateTime.now());
-
         this.productRepository.save(product);
     }
 
     @Transactional
     public void update(UUID uuid, Product updatedProduct){
-        Product product = this.productRepository.findById(uuid).get();
+        Product product = findById(uuid).orElseThrow(ProductNotFoundException::new);
         product.updateFields(updatedProduct);
         this.productRepository.save(product);
     }
