@@ -113,6 +113,7 @@ public class ShowcaseService {
 
     @Transactional
     public void delete(UUID uuid){
+        findByUUID(uuid);
         this.showcaseRepository.deleteById(uuid);
     }
 }
