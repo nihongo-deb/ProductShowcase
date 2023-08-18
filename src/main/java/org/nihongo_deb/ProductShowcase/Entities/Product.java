@@ -125,4 +125,18 @@ public class Product {
     public boolean isPriceNotValid() {
         return price >= 0.01;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "uuid=" + uuid +
+                ", position=" + position +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", price=" + price +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", owner=" + owner +
+                '}';
+    }
 }

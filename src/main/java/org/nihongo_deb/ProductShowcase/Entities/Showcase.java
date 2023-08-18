@@ -101,4 +101,24 @@ public class Showcase {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+
+    public void updateFields(Showcase updatedShowcase) {
+        this.name = updatedShowcase.getName();
+        this.type = updatedShowcase.getType();
+        this.address = updatedShowcase.getAddress();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Showcase{" +
+                "uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", type='" + type + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", products=" + products +
+                '}';
+    }
 }
