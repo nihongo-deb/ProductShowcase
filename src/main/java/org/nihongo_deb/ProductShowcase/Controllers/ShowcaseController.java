@@ -88,8 +88,8 @@ public class ShowcaseController {
 
     @GetMapping("/{uuid}")
     public ShowcaseDTO getOneByUuid(@PathVariable("uuid") String uuid){
-        // TODO добавить exception handler если возвращает null
-        return modelMapper.map(this.showcaseService.findByUUID(UUID.fromString(uuid)), ShowcaseDTO.class);
+        Showcase showcase = this.showcaseService.findByUUID(UUID.fromString(uuid));
+        return modelMapper.map(showcase, ShowcaseDTO.class);
     }
 
     @PostMapping("")
@@ -129,6 +129,13 @@ public class ShowcaseController {
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotCreatedException e){
         MyErrorResponse response = new MyErrorResponse(e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotFoundException e){
+        MyErrorResponse response = new MyErrorResponse("showcase not found, check uuid");
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
