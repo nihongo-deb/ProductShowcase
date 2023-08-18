@@ -68,6 +68,7 @@ public class ProductService {
 
     @Transactional
     public void delete(UUID uuid){
+        findById(uuid).orElseThrow(ProductNotFoundException::new);
         this.productRepository.deleteById(uuid);
     }
 

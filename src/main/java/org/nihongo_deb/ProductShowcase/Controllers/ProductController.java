@@ -13,6 +13,7 @@ import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotCreatedException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotUpdatedException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.nihongo_deb.ProductShowcase.Validators.NewProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -127,6 +128,13 @@ public class ProductController {
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ProductNotFoundException e){
         MyErrorResponse response = new MyErrorResponse("product not found, check uuid");
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ShowcaseNotFoundException e){
+        MyErrorResponse response = new MyErrorResponse("showcase not found, check uuid");
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

@@ -3,6 +3,7 @@ package org.nihongo_deb.ProductShowcase.Services;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ShowcaseRepository;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class ShowcaseService {
     }
 
     public Showcase findByUUID(UUID uuid){
-        return this.showcaseRepository.findById(uuid).orElse(null);
+        return this.showcaseRepository.findById(uuid).orElseThrow(ShowcaseNotFoundException::new);
     }
 
     public List<Showcase> findByType(String type) {
