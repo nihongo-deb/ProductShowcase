@@ -1,6 +1,9 @@
 package org.nihongo_deb.ProductShowcase.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -20,12 +23,18 @@ public class Showcase {
     private UUID uuid;
 
     @Column(name = "showcase_name")
+    @Size(min = 2, max = 128, message = "name should be between 2 and 128 characters")
+    @NotEmpty
     private String name;
 
     @Column(name = "showcase_address")
+    @Size(min = 2, max = 256, message = "address should be between 2 and 256 characters")
+    @NotEmpty
     private String address;
 
     @Column(name = "showcase_type")
+    @Size(min = 2, max = 64, message = "type should be between 2 and 64 characters")
+    @NotEmpty
     private String type; // TODO change to enum
 
     @Column(name = "showcase_created_at")

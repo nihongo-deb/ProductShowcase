@@ -1,6 +1,7 @@
 package org.nihongo_deb.ProductShowcase.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,15 +20,23 @@ public class Product {
     private UUID uuid;
 
     @Column(name = "product_position")
+    @Min(value = 1, message = "position should be between 1 and 10")
+    @Max(value = 10, message = "position should be between 1 and 10")
+    @NotNull(message = "position should not be empty")
     private Integer position;
 
     @Column(name = "product_name")
+    @Size(min = 2, max = 256, message = "name should be between 2 and 256 characters")
+    @NotEmpty(message = "name should not be empty")
     private String name;
 
     @Column(name = "product_type")
+    @Size(min = 2, max = 64, message = "name should be between 2 and 256 characters")
+    @NotEmpty(message = "type should not be empty")
     private String type;
 
     @Column(name = "product_price")
+    @NotNull(message = "price should not be empty")
     private Double price;
 
     @Column(name = "product_created_at")
@@ -110,5 +119,10 @@ public class Product {
         this.type = product.getType();
         this.position = product.getPosition();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @AssertTrue(message = "price should be greater then 0.01")
+    public boolean isPriceNotValid() {
+        return price >= 0.01;
     }
 }
