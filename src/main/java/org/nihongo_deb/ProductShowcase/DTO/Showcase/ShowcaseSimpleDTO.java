@@ -1,5 +1,7 @@
 package org.nihongo_deb.ProductShowcase.DTO.Showcase;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 
 /**
@@ -8,7 +10,11 @@ import java.util.UUID;
  * @created 17.08.2023
  */
 public class ShowcaseSimpleDTO {
+    @NotNull
+    @org.hibernate.validator.constraints.UUID
     private UUID uuid;
+
+    @NotNull
     private String name;
 
     public UUID getUuid() {

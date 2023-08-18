@@ -25,6 +25,8 @@ public class ProductNewDTO {
 
     @NotNull(message = "price should not be empty")
     private Double price;
+
+    @NotNull(message = "showcase(uuid) should not be empty")
     private UUID owner;
 
     public Integer getPosition() {
@@ -69,6 +71,8 @@ public class ProductNewDTO {
 
     @AssertTrue(message = "price should be greater then 0.01")
     public boolean isPriceNotValid() {
+        if (price == null)
+            return false;
         return this.price >= 0.01;
     }
 }

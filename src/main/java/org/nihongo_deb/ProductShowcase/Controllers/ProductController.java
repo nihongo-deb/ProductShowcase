@@ -11,6 +11,9 @@ import org.nihongo_deb.ProductShowcase.Services.ProductService;
 import org.nihongo_deb.ProductShowcase.Services.ShowcaseService;
 import org.nihongo_deb.ProductShowcase.Util.ErrorResponces.MyErrorResponse;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotCreatedException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotUpdatedException;
+import org.nihongo_deb.ProductShowcase.Validators.NewProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +35,14 @@ public class ProductController {
     private final ProductService productService;
     private final ShowcaseService showcaseService;
     private final ModelMapper modelMapper;
+    private final NewProductValidator newProductValidator;
 
     @Autowired
-    public ProductController(ProductService productService, ShowcaseService showcaseService, ModelMapper modelMapper) {
+    public ProductController(ProductService productService, ShowcaseService showcaseService, ModelMapper modelMapper, NewProductValidator newProductValidator) {
         this.productService = productService;
         this.showcaseService = showcaseService;
         this.modelMapper = modelMapper;
+        this.newProductValidator = newProductValidator;
     }
 
     @GetMapping("/{showcaseUUID}")
@@ -66,6 +71,8 @@ public class ProductController {
 
     @PostMapping("")
     private ResponseEntity<HttpStatus> create(@RequestBody @Valid ProductNewDTO productNewDTO, BindingResult bindingResult){
+        newProductValidator.validate(productNewDTO, bindingResult);
+
         if (bindingResult.hasErrors()){
             StringBuilder stringBuilder = new StringBuilder();
             bindingResult.getFieldErrors()
@@ -81,8 +88,18 @@ public class ProductController {
     }
 
     @PatchMapping("/{uuid}")
-    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody ProductDTO productDTO){
-        Product updatedProduct = this.modelMapper.map(productDTO, Product.class);
+    public ResponseEntity<HttpStatus> update(@PathVariable String uuid, @RequestBody @Valid ProductNewDTO productNewDTO, BindingResult bindingResult){
+        newProductValidator.validate(productNewDTO, bindingResult);
+
+        if (bindingResult.hasErrors()){
+            StringBuilder stringBuilder = new StringBuilder();
+            bindingResult.getFieldErrors()
+                    .forEach(e -> stringBuilder.append(e.getField()).append(" - ").append(e.getDefaultMessage()).append(";"));
+
+            throw new ProductNotUpdatedException(stringBuilder.toString());
+        }
+
+        Product updatedProduct = this.modelMapper.map(productNewDTO, Product.class);
         this.productService.update(UUID.fromString(uuid), updatedProduct);
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -96,6 +113,20 @@ public class ProductController {
     @ExceptionHandler
     private ResponseEntity<MyErrorResponse> handleException(ProductNotCreatedException e){
         MyErrorResponse response = new MyErrorResponse(e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ProductNotUpdatedException e){
+        MyErrorResponse response = new MyErrorResponse(e.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<MyErrorResponse> handleException(ProductNotFoundException e){
+        MyErrorResponse response = new MyErrorResponse("product not found, check uuid");
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
