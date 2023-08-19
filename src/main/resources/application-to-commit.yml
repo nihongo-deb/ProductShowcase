@@ -2,7 +2,7 @@ spring:
   liquibase:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/ShowcaseProduct
+    url: # пример - jdbc:postgresql://localhost:5432/ShowcaseProduct
     username:
     password:
   jpa:

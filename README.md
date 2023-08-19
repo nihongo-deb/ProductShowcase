@@ -212,7 +212,10 @@ INPUT:
 - Далее требуется изменить один конфигурационный файл: application-to-commit.yml
   * перейдите в директорию src/main/resources/
   * переименуйте файл в 'application.yml'
-  * далее измените поля url (адрес БД), username (пользователь БД), password (пароль пользователя БД)
+  * далее заполните поля в пункте *datasource*: 
+    - ___url___ (адрес БД) 
+    - ___username___ (пользователь БД) 
+    - ___password___ (пароль пользователя БД)
   ``` yaml
   spring:
   liquibase:
