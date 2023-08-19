@@ -5,7 +5,9 @@ import org.nihongo_deb.ProductShowcase.DTO.Product.ProductFilterDTO;
 import org.nihongo_deb.ProductShowcase.Entities.Product;
 import org.nihongo_deb.ProductShowcase.Entities.Showcase;
 import org.nihongo_deb.ProductShowcase.Repositories.ProductRepository;
+import org.nihongo_deb.ProductShowcase.Repositories.ShowcaseRepository;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
+import org.nihongo_deb.ProductShowcase.Util.Exceptions.ShowcaseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +27,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ShowcaseRepository showcaseRepository;
 
     @Autowired
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository,
+                          ShowcaseRepository showcaseRepository) {
         this.productRepository = productRepository;
+        this.showcaseRepository = showcaseRepository;
     }
 
     public Product findById(UUID uuid) {
@@ -61,6 +66,15 @@ public class ProductService {
     @Transactional
     public void update(UUID uuid, Product updatedProduct){
         Product product = findById(uuid);
+
+        if (updatedProduct.getOwner() == null){
+            product.setOwner(null);
+        }
+        else if (!product.getOwner().getUuid().equals(updatedProduct.getOwner().getUuid())){
+            showcaseRepository.findById(updatedProduct.getUuid()).orElseThrow(ShowcaseNotFoundException::new);
+            product.setOwner(updatedProduct.getOwner());
+        }
+
         product.updateFields(updatedProduct);
         this.productRepository.save(product);
     }
