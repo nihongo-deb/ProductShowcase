@@ -55,7 +55,8 @@ public class ShowcaseController {
     // поиск витрины через параметры запроса
     @Operation(
             summary = "Получение списка витрин",
-            description = "Фильтрация осуществляется по параметрам запроса")
+            description = "Фильтрация осуществляется по параметрам запроса. Deprecated так как отсутствует валидация параметров запроса")
+    @Deprecated()
     @GetMapping()
     public List<ShowcaseDTO> getShowcases(
             @RequestParam(name = "type", required = false) @Parameter(description = "Тип витрины") String type,
@@ -71,8 +72,8 @@ public class ShowcaseController {
         showcaseFilterDTO.setAddress(address);
         showcaseFilterDTO.setCreatedDateFrom(createdDateFrom);
         showcaseFilterDTO.setCreatedDateTo(createdDateTo);
-        showcaseFilterDTO.setCreatedDateFrom(updatedDateFrom);
-        showcaseFilterDTO.setCreatedDateTo(updatedDateTo);
+        showcaseFilterDTO.setUpdatedDateFrom(updatedDateFrom);
+        showcaseFilterDTO.setUpdatedDateTo(updatedDateTo);
 
         List<ShowcaseDTO> showcaseDTOS = this.showcaseService.findByFilterDTO(showcaseFilterDTO)
                 .stream()

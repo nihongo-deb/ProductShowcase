@@ -17,8 +17,6 @@ public class ShowcaseFilterDTO {
     private String type;
     @Schema(description = "Адрес витрины")
     private String address;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     @Schema(description = "Дата и время начала диапазона создания витрины")
     private LocalDateTime createdDateFrom;
     @Schema(description = "Дата и время конца диапазона создания витрины")
@@ -50,22 +48,6 @@ public class ShowcaseFilterDTO {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public LocalDateTime getCreatedDateFrom() {

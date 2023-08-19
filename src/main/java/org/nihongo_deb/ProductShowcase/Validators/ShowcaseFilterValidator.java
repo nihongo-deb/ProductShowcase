@@ -27,6 +27,26 @@ public class ShowcaseFilterValidator implements Validator {
         LocalDateTime updatedDateFrom = showcaseFilterDTO.getUpdatedDateFrom();
         LocalDateTime updatedDateTo = showcaseFilterDTO.getUpdatedDateTo();
 
+        if (createdDateFrom != null && createdDateTo == null) {
+            createdDateTo = LocalDateTime.now();
+            showcaseFilterDTO.setCreatedDateTo(createdDateTo);
+        }
+
+        if (createdDateFrom == null && createdDateTo != null) {
+            createdDateFrom = LocalDateTime.MIN;
+            showcaseFilterDTO.setCreatedDateFrom(createdDateFrom);
+        }
+
+        if (updatedDateFrom != null && updatedDateTo == null) {
+            updatedDateTo = LocalDateTime.now();
+            showcaseFilterDTO.setUpdatedDateTo(updatedDateTo);
+        }
+
+        if (updatedDateFrom == null && updatedDateTo != null) {
+            updatedDateFrom = LocalDateTime.MIN;
+            showcaseFilterDTO.setUpdatedDateFrom(updatedDateFrom);
+        }
+
         if (createdDateFrom != null && createdDateTo != null)
             if (createdDateFrom.isAfter(createdDateTo))
                 errors.rejectValue("createdDateFrom", "", "is greater then createdDateTo");
