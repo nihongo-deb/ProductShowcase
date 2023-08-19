@@ -1,7 +1,6 @@
 package org.nihongo_deb.ProductShowcase.Validators;
 
-import org.nihongo_deb.ProductShowcase.DTO.Product.ProductSimpleDTO;
-import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseNewDTO;
+import org.nihongo_deb.ProductShowcase.DTO.Product.ProductOnlyUuidDTO;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseUpdateDTO;
 import org.nihongo_deb.ProductShowcase.Services.ProductService;
 import org.nihongo_deb.ProductShowcase.Util.Exceptions.ProductNotFoundException;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.UUID;
 
 /**
  * @author KAWAIISHY
@@ -39,7 +37,7 @@ public class UpdateShowcaseValidator implements Validator {
         if (showcaseUpdateDTO.getProducts().isEmpty())
             return;
 
-        for (ProductSimpleDTO product : showcaseUpdateDTO.getProducts()){
+        for (ProductOnlyUuidDTO product : showcaseUpdateDTO.getProducts()){
             try {
                 productService.findById(product.getUuid());
             }catch (ProductNotFoundException e){
