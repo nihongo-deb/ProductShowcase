@@ -51,6 +51,7 @@ OUTPUT:
 (PUT) http://localhost:8080/api/v1/showcase
 
 INPUT (все поля не обязательные):
+
 ```JSON
 {
   "name": "string",
@@ -67,6 +68,7 @@ INPUT (все поля не обязательные):
 (POST)http://localhost:8080/api/v1/showcase
 
 INPUT:
+
 ```JSON
 {
   "name": "string",
@@ -120,7 +122,7 @@ INPUT:
 
 ### Продукты
 #### **Получение продуктов витрины по UUID витрины (GET)**
-http://localhost:8080/api/v1/products/{showcaseUUID}
+(GET) http://localhost:8080/api/v1/products/{showcaseUUID}
 
 OUTPUT:
 
@@ -144,9 +146,10 @@ OUTPUT:
 ```
 
 #### **Получение продуктов витрины по UUID витрины и фильтрация (PUT)**
-http://localhost:8080/api/v1/products/{showcaseUUID}
+(PUT) http://localhost:8080/api/v1/products/{showcaseUUID}
 
 INPUT:
+
 ```JSON
 {
   "type": "string",
@@ -177,8 +180,10 @@ OUTPUT:
 ```
 
 #### **Создание продукта (POST)**
-http://localhost:8080/api/v1/products
+(POST) http://localhost:8080/api/v1/products
+
 INPUT:
+
 ```JSON
 {
   "position": 10,
@@ -188,12 +193,17 @@ INPUT:
   "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 }
 ```
+
 #### **Удаление продукта по его UUID (DELETE)**
-http://localhost:8080/api/v1/products/{uuid}
+
+(DELETE) http://localhost:8080/api/v1/products/{uuid}
 
 #### **Обновление продукта (PATCH)**
-http://localhost:8080/api/v1/products/{uuid}
+
+(PATCH) http://localhost:8080/api/v1/products/{uuid}
+
 INPUT:
+
 ```JSON
 {
   "position": 10,
