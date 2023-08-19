@@ -230,9 +230,10 @@ INPUT:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
   ```
-- Из корня проекта (Вы должны находиться в папке ProductShowcase-master) запустите сборку проекта через консоль (cmd, powershel, git bash и т.д.) данной командой:
+- Из корня проекта (Вы должны находиться в папке ___ProductShowcase-master___) запустите сборку проекта через консоль (cmd, powershel, git bash и т.д.) данной командой:
 ```
 ./mvnw spring-boot:run
 ```
-- Проект собран и запущен. Для теста всех доступных end-поинтов перейдите по ссылке http://localhost:8080/swagger-ui/index.html
+- Проект собран и запущен. Для теста всех доступных end-поинтов перейдите по ссылке:
+  * http://localhost:8080/swagger-ui/index.html
 
