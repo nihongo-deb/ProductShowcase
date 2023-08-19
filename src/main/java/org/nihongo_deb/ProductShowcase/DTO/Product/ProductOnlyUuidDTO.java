@@ -9,6 +9,7 @@ import java.util.UUID;
  * @project ProductShowcase
  * @created 19.08.2023
  */
+@Schema(description = "DTO хранящая только UUID товара (нужна для обновления витрины)")
 public class ProductOnlyUuidDTO {
     @Schema(description = "UUID товара")
     private UUID uuid;

@@ -1,4 +1,6 @@
 package org.nihongo_deb.ProductShowcase.DTO.Showcase;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.UUID;
 
 /**
@@ -6,8 +8,11 @@ import java.util.UUID;
  * @project ProductShowcase
  * @created 17.08.2023
  */
+@Schema(description = "DTO минимальных данных о витрине - response")
 public class ShowcaseSimpleDTO {
+    @Schema(description = "UUID витрины")
     private UUID uuid;
+    @Schema(description = "Название витрины")
     private String name;
 
     public UUID getUuid() {

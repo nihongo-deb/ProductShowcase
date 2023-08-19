@@ -1,5 +1,7 @@
 package org.nihongo_deb.ProductShowcase.DTO.Showcase;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
 /**
@@ -7,15 +9,23 @@ import java.time.LocalDateTime;
  * @project ProductShowcase
  * @created 17.08.2023
  */
+@Schema(description = "DTO фильтра витрины - request (все поля опциональны)")
 public class ShowcaseFilterDTO {
+    @Schema(description = "Название витрины")
     private String name;
+    @Schema(description = "Тип витрины")
     private String type;
+    @Schema(description = "Адрес витрины")
     private String address;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Schema(description = "Дата и время начала диапазона создания витрины")
     private LocalDateTime createdDateFrom;
+    @Schema(description = "Дата и время конца диапазона создания витрины")
     private LocalDateTime createdDateTo;
+    @Schema(description = "Дата и время начала диапазона обновления витрины")
     private LocalDateTime updatedDateFrom;
+    @Schema(description = "Дата и время конца диапазона обновления витрины")
     private LocalDateTime updatedDateTo;
 
     public String getName() {

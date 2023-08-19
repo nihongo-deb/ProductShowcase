@@ -1,5 +1,6 @@
 package org.nihongo_deb.ProductShowcase.DTO.Showcase;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.nihongo_deb.ProductShowcase.DTO.Product.ProductSimpleDTO;
 
 import java.time.LocalDateTime;
@@ -11,14 +12,21 @@ import java.util.UUID;
  * @project ProductShowcase
  * @created 16.08.2023
  */
+@Schema(description = "DTO витрины - response")
 public class ShowcaseDTO {
+    @Schema(description = "UUID витрины")
     private UUID uuid;
+    @Schema(description = "Название витрины")
     private String name;
+    @Schema(description = "Тип витрины")
     private String type;
+    @Schema(description = "Адрес витрины")
     private String address;
+    @Schema(description = "Дата и время создания витрины")
     private LocalDateTime createdAt;
+    @Schema(description = "Дата и время обновления витрины")
     private LocalDateTime updatedAt;
-
+    @Schema(description = "Список данных о товарах, которыми владеет данная витрина (UUID и название товара)")
     private List<ProductSimpleDTO> products;
 
 
