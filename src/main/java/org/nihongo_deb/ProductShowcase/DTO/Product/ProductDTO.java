@@ -1,5 +1,6 @@
 package org.nihongo_deb.ProductShowcase.DTO.Product;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import org.nihongo_deb.ProductShowcase.DTO.Showcase.ShowcaseSimpleDTO;
@@ -11,28 +12,38 @@ import java.util.UUID;
  * @project ProductShowcase
  * @created 17.08.2023
  */
+@Schema(description = "DTO товара - response")
 public class ProductDTO {
+    @Schema(description = "UUID товара")
     private UUID uuid;
 
+    @Schema(description = "Позиция товара")
     @Min(value = 1, message = "position should be between 1 and 10")
     @Max(value = 10, message = "position should be between 1 and 10")
     @NotNull(message = "position should not be empty")
     private Integer position;
 
+    @Schema(description = "Название товара")
     @Size(min = 2, max = 256, message = "name should be between 2 and 256 characters")
     @NotEmpty(message = "name should not be empty")
     private String name;
 
+    @Schema(description = "Тип товара")
     @Size(min = 2, max = 64, message = "name should be between 2 and 256 characters")
     @NotEmpty(message = "type should not be empty")
     private String type;
 
+    @Schema(description = "Цена товара")
     @NotNull(message = "price should not be empty")
     private Double price;
 
+    @Schema(description = "Дата и время создание товара")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Дата и время обновления товара")
     private LocalDateTime updatedAt;
 
+    @Schema(description = "Данные витрины, которая владеет данным товаром (UUID и название витрины)")
     @NotNull(message = "price should not be empty")
     private ShowcaseSimpleDTO owner;
 
@@ -100,6 +111,7 @@ public class ProductDTO {
         this.owner = owner;
     }
 
+    @Schema(description = "поле валидации цены", accessMode = Schema.AccessMode.READ_ONLY)
     @AssertTrue(message = "price should be greater then 0.01")
     public boolean isPriceNotValid() {
         return price >= 0.01;
